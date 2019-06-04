@@ -43,6 +43,12 @@
     - name: Copy docker-compose.yml
       synchronize: src=conveyor-services dest=./
 
+    - name: Open firewall port 4929 for cvmfs-gateway
+      firewalld: port=4929/tcp permanent=true state=enabled
+
+    - name: Open firewall port 4930 for cvmfs-notify
+      firewalld: port=4930/tcp permanent=true state=enabled
+
     - name: Open firewall port 5672 for RabbitMQ (used by Conveyor)
       firewalld: port=5672/tcp permanent=true state=enabled
 
@@ -76,3 +82,9 @@
   tags:
     - frontend
   become: yes
+  tasks:
+    - name: Copy the job submission script
+      copy: src=submit_jobs.sh dest=submit_jobs.sh mode=0755
+
+    - name: Copy the example transaction script
+      copy: src=test_transaction.sh dest=test_transaction.sh mode=0755

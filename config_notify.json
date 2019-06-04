@@ -1,0 +1,12 @@
+{
+    "port": 4930,
+    "log_level": "info",
+    "amqp": {
+        "user": "guest",
+        "pass": "guest",
+        "url": "localhost",
+        "exchange": "repository.activity",
+        "port": 5672,
+        "vhost": "/"
+    }
+}
