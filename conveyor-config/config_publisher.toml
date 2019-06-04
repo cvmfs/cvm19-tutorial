@@ -1,0 +1,24 @@
+# Options common to multiple components (worker, server, etc.)
+shared_key = "secret_key" # api key shared by server, worker, submit.
+job_wait_timeout = 7200 # max number of seconds to wait for jobs to complete
+debug = false # enable debug logging
+log_timestamps = false # include timestamps in logging output
+
+# Queue configuration is used by conveyor server
+[queue]
+username = "guest"
+password = "guest"
+host = "cvm19-gw-$ID.cern.ch"
+port = 5672
+vhost = "/"
+
+# Job server configuration is used by conveyor {submit, consumer, server}
+[server]
+host = "cvm19-gw-$ID.cern.ch"
+port = 8080
+
+# Worker configuration
+[worker]
+# name = defaults to hostname
+job_retries = 3
+temp_dir = "/tmp/conveyor-worker"

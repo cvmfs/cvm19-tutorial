@@ -1,0 +1,78 @@
+---
+- name: Setup up machines (common tasks)
+  hosts: "*"
+  tags:
+    - common
+  become: yes
+  tasks:
+    - name: Enable the CernVM Yum repository
+      yum: name=https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest.noarch.rpm state=latest
+
+    - name: Disable the protectbase Yum plugin
+      script: disable_protectbase.sh creates=/tmp/protectbase_disabled
+
+    - name: Update the system
+      yum: name=* state=latest
+
+    - name: Install the CernVM-FS client package and some utilities
+      yum:
+        name:
+          - cvmfs
+          - jq
+          - wget
+
+    - name: Install the Conveyor package
+      yum: name=https://ecsft.cern.ch/dist/cvmfs/nightlies/conveyor-git-23/conveyor-0.1.0-0.23.x86_64.rpm state=latest
+
+
+- name: Set up the gateway machines
+  hosts: cvm19gateways
+  tags:
+    - gateway
+  become: yes
+  tasks:
+    - name: Install the CernVM-FS server, gateway and notify packages
+      yum: name="cvmfs-server,cvmfs-gateway,cvmfs-notify" state=latest
+
+    - name: Install Docker, Docker Compose and the Postgres client
+      yum: name="docker,docker-compose,postgresql" state=latest
+
+    - name: Start the Docker daemon
+      service: name=docker enabled=yes state=started
+
+    - name: Copy docker-compose.yml
+      synchronize: src=conveyor-services dest=./
+
+    - name: Open firewall port 5672 for RabbitMQ (used by Conveyor)
+      firewalld: port=5672/tcp permanent=true state=enabled
+
+    - name: Open firewall port 15672 for the RabbitMQ management console (used by Conveyor)
+      firewalld: port=15672/tcp permanent=true state=enabled
+
+    - name: Open firewall port 8080 for the Conveyor job server
+      firewalld: port=8080/tcp permanent=true state=enabled
+
+    - name: Open firewall port 80 for serving CVMFS
+      firewalld: port=80/tcp permanent=true state=enabled
+
+    - name: Reload Firewalld
+      service: name=firewalld enabled=yes state=reloaded
+
+
+- name: Set up the publisher machines
+  hosts: cvm19publishers
+  tags:
+    - publisher
+  become: yes
+  tasks:
+    - name: Install the CernVM-FS server package
+      yum:
+        name:
+          - cvmfs-server
+
+
+- name: Set up the frontend machines
+  hosts: cvm19frontends
+  tags:
+    - frontend
+  become: yes

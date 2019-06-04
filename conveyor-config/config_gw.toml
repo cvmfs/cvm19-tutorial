@@ -1,0 +1,33 @@
+# Options common to multiple components (worker, server, etc.)
+shared_key = "secret_key" # api key shared by server, worker, submit.
+job_wait_timeout = 7200 # max number of seconds to wait for jobs to complete
+debug = false # enable debug logging
+log_timestamps = false # include timestamps in logging output
+
+# Job server configuration is used by conveyor {submit, consumer, server}
+[server]
+host = "localhost"
+port = 8080
+
+# Queue configuration is used by conveyor server
+[queue]
+username = "guest"
+password = "guest"
+host = "localhost"
+port = 5672
+vhost = "/"
+
+# Job server backend configuration is only used by conveyor server
+[db]
+type = "postgres" # postgres | mysql
+database = "cvmfs"
+username = "postgres"
+password = "password"
+host = "localhost"
+port = 5432
+
+# Worker configuration
+[worker]
+# name = defaults to hostname
+job_retries = 3
+temp_dir = "/tmp/conveyor-worker"
