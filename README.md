@@ -139,7 +139,7 @@ $ systemctl start conveyor-server@root
 
 On the publishers, start the Conveyor workers:
 ```bash
-$ systemct start conveyor-worker@root
+$ systemctl start conveyor-worker@root
 ```
 
 The logs of these services can be inspected as follows:
